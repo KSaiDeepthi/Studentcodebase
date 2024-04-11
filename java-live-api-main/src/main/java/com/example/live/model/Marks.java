@@ -3,7 +3,6 @@ package com.example.live.model;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.util.Date;
 
 @Entity
@@ -27,7 +26,7 @@ public class Marks implements Serializable {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_date")
-    private Date created_date;
+    private Date createdDate;
 
     public Long getId() {
         return id;
@@ -61,11 +60,11 @@ public class Marks implements Serializable {
         this.averageScore = averageScore;
     }
 
-    public Date getCreated_date() {
-        return created_date;
+    public Date getCreatedDate() {
+        return createdDate;
     }
 
-    public void setCreated_date(Date created_date) {
-        this.created_date = created_date;
+    public void setCreatedDate(Date created_date) {
+        this.createdDate = createdDate;
     }
 }

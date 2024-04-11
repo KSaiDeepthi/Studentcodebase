@@ -1,1 +1,3 @@
-com/example/live/LiveApplicationTests.class
+com\example\live\util\UtilityServiceForStudentTest.class
+com\example\live\controller\StudentControllerTest.class
+com\example\live\Service\StudentOperationServiceImplTest.class

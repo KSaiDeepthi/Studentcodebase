@@ -9,4 +9,5 @@ import java.util.List;
 public interface MarksRepository extends JpaRepository<Marks, Long> {
 
     public List<Marks> findByStudentProfile(StudentProfile studentProfile);
+    public List<Marks> findByStudentProfileOrderByCreatedDateAsc(StudentProfile studentProfile);
 }

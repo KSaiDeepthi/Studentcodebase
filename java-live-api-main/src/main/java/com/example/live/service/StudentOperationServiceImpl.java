@@ -40,7 +40,7 @@ public class StudentOperationServiceImpl implements StudentOperationService {
     }
 
     @Override
-    public Map<String, Object> updateStudentProfile(StudentProfile studentProfile) {
+    public Map<String, Object> updateStudentProfile(StudentProfile studentProfile) throws CustomException {
         StudentProfile studentProfile1 = studentRepository.findByStudentId(studentProfile.getStudentId());
         studentProfile1.setFirstName(studentProfile.getFirstName());
         studentProfile1.setLastName(studentProfile.getLastName());
@@ -56,7 +56,7 @@ public class StudentOperationServiceImpl implements StudentOperationService {
     }
 
     @Override
-    public Map<String, Object> deleteStudentProfile(String studentId) {
+    public Map<String, Object> deleteStudentProfile(String studentId) throws CustomException {
         StudentProfile studentProfile = studentRepository.findByStudentId(studentId);
         List<Marks> marks = marksRepository.findByStudentProfile(studentProfile);
         utilityServiceForStudent.deleteMarks(marks);
@@ -69,25 +69,41 @@ public class StudentOperationServiceImpl implements StudentOperationService {
     }
 
     @Override
-    public Map<String, Object> addScore(Map<String, Object> payload) {
+    public Map<String, Object> addScore(Map<String, Object> payload) throws CustomException {
         Marks marks = new Marks();
         StudentProfile studentProfile = studentRepository.findByStudentId(payload.get("studentId").toString());
+        System.out.println("Student:"+studentProfile.getEmail());
         float score = Float.parseFloat((String) payload.get("currentScore"));
+        System.out.println("Score"+score);
         if (score<0 || score>100) {
             throw new CustomException("Invalid score");
         }
+        Map<String,Object> map = new HashMap<>();
         marks.setStudentProfile(studentProfile);
+        System.out.println("MArks-Student:"+marks.getStudentProfile().getEmail());
         marks.setCurrentScore(score);
         utilityServiceForStudent.saveMarks(marks);
         calculateAvg(studentProfile, marks);
-
-        return Map.of("status","success");
+        map.put("status","success");
+        map.put("Average",marks.getAverageScore());
+        return map;
     }
 
     @Override
-    public List<Map<Object, Object>> getAllStudents() {
+    public List<Map<Object, Object>> getAllStudents() throws CustomException {
         List<Map<Object,Object>> students = studentRepository.getLatestStudentMarks();
         return students;
+    }
+
+    @Override
+    public Map<String, Object> SearchStudent(String studentNumber, String firstName, String lastName, String emailAddress) throws CustomException {
+        StudentProfile studentProfile = studentRepository.findByStudentIdOrFirstNameOrLastNameOrEmail(studentNumber, firstName, lastName, emailAddress);
+        Marks marks = marksRepository.findByStudentProfileOrderByCreatedDateAsc(studentProfile).get(0);
+        Map<String,Object> map = new HashMap<>();
+        map.put("student",studentProfile);
+        map.put("marks",marks);
+        map.put("status","success");
+        return map;
     }
 
     private void checkMandatoryFields(StudentProfile studentProfile) {
@@ -136,7 +152,7 @@ public class StudentOperationServiceImpl implements StudentOperationService {
         float avg = count/total;
         System.out.println("Average:"+avg);
         marks1.setAverageScore(avg);
-        marks1.setCreated_date(new Date());
+        marks1.setCreatedDate(new Date());
         utilityServiceForStudent.saveMarks(marks1);
     }
 
